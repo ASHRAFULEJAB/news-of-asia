@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
+  sendEmailVerification,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
@@ -33,13 +34,21 @@ const AuthProvider = ({ children }) => {
   const updateUserProfile = (profile) => {
     return updateProfile(auth.currentUser,profile)
   }
+  const verifyEmail = () => {
+    return sendEmailVerification(auth.currentUser)
+  }
+    
+
   const logOut = () => {
     setLoading(true)
     return signOut(auth)
   }
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser)
+      if (currentUser === null ||currentUser.emailVerified) {
+        
+        setUser(currentUser)
+      }
       setLoading(false)
     })
     return () => {
@@ -50,10 +59,12 @@ const AuthProvider = ({ children }) => {
   const authInfo = {
     user,
     loading,
+    setLoading,
     signInGoogle,
     logOut,
     signInEmailPassword,
     updateUserProfile,
+    verifyEmail,
     signUpEmailPassword,
   }
 
